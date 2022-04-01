@@ -51,40 +51,101 @@ public class UnsortedSet<E> extends AbstractSet<E> {
         if (item == null) {
             throw new IllegalArgumentException("Violation of precondition: item != null");
         }
-        ArrayList<E> prev = new ArrayList<E>(myCon);
+        boolean mod = false;
         if (!myCon.contains(item)) {
-            myCon.add(item); 
+            myCon.add(item);
+            mod = true;
         }
-        return !myCon.equals(prev);
+        return mod;
     }
 
-    /**
-     * A union operation. Add all items of otherSet that 
-     * are not already present in this set to this set.
-     * @param otherSet != null
-     * @return true if this set changed as a result of this operation, 
-     * false otherwise.
-     */
-    public boolean addAll(ISet<E> otherSet) {
-    if (otherSet == null) {
-        throw new IllegalArgumentException("Violation of precondition: otherSet != null");
-    }
-    ArrayList<E> prev = new ArrayList<E>(myCon);
-    for (E val : otherSet) {
-        myCon.add(val);
-    }
-        return !myCon.equals(prev);
-    }
+    // ADDALL IS O(N^2) IN ABSTRACT SET, NO NEED TO USE
 
     /**
      * Make this set empty.
      * <br>pre: none
      * <br>post: size() = 0
+     * O(1)
+     * COMMENT: DO I NEED TO OVERRIDE SINCE ITS ALREADY O(N) IN ABSTRACTSET
      */
     public void clear() {
         myCon = new ArrayList<>();
     }
 
+    // CONTAINS IS O(N) IN ABSTRACT SET, ALL GOOD
+    // CONTAINSALL IS ALSO GOOD
 
+    /**
+     * Create a new set that is the difference of this set and otherSet. 
+     * Return an ISet of elements that are in this Set but not in otherSet. 
+     * Also called the relative complement. 
+     * <br>Example: If ISet A contains [X, Y, Z] and ISet B contains [W, Z] 
+     * then A.difference(B) would return an ISet with elements [X, Y] while
+     * B.difference(A) would return an ISet with elements [W]. 
+     * <br>pre: otherSet != null
+     * <br>post: returns a set that is the difference of this set and otherSet.
+     * Neither this set or otherSet are altered as a result of this operation.
+     * <br> pre: otherSet != null
+     * @param otherSet != null
+     * @return a set that is the difference of this set and otherSet
+     * O(N^2)
+     */
+    public ISet<E> difference(ISet<E> otherSet) {
+        ISet<E> result = new UnsortedSet<>();
+        for (E val : myCon) {
+            if (!otherSet.contains(val)) {
+                result.add(val);
+            }
+        }
+        return result;
+    }
+
+    // NO NEED TO OVERRIDE EQUALS UNTIL SORTEDSET
+
+    /**
+     * create a new set that is the intersection of this set and otherSet.
+     * <br>pre: otherSet != null<br>
+     * <br>post: returns a set that is the intersection of this set 
+     * and otherSet.
+     * Neither this set or otherSet are altered as a result of this operation.
+     * <br> pre: otherSet != null
+     * @param otherSet != null
+     * @return a set that is the intersection of this set and otherSet
+     * O(N^2)
+     */
+    public ISet<E> intersection(ISet<E> otherSet) {
+        ISet<E> result = new UnsortedSet<>();
+        for (E val : myCon) {
+            if (otherSet.contains(val)) {
+                result.add(val);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Return an Iterator object for the elements of this set.
+     * pre: none
+     * @return an Iterator object for the elements of this set
+     * O(1)
+     */
+    public Iterator<E> iterator() {
+        return myCon.iterator();
+    }
+
+
+    // REMOVE OK
+
+    /**
+     * Return the number of elements of this set.
+     * pre: none
+     * @return the number of items in this set
+     * O(1)
+     */
+    public int size() {
+        return myCon.size();
+    }
+
+    // UNION IMPLEMENTED
 
 }
