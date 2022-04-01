@@ -23,6 +23,7 @@ import java.util.ArrayList;
 // NOTE QUESTIONS:
 // DO WE NEED TO CALL SUPER ON METHODS WE DID NOT NEED TO IMPLEMENT
 // IS CLEAR NOT O(1)
+// BRO PLS CLEAN THIS THIS IS SOO UGLY
 //
 
 /**
@@ -94,14 +95,20 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * @param otherSet != null
      * @return true if this set changed as a result of this operation, 
      * false otherwise.
-     * O(N)
+     * O(N) if other set is also a SortedSe, O(NlogN) otherwise
      */
     public boolean addAll(ISet<E> otherSet) {
         if (otherSet == null) {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
+        SortedSet<E> otherSortedSet;
+        if (!(otherSet instanceof SortedSet<?>)) {
+            otherSortedSet = new SortedSet<>(otherSet); // should be O(NlogN)
+        } else {
+            otherSortedSet = (SortedSet<E>) otherSet;
+        }
         int oldSize = size();
-        mergeSet(otherSet);
+        mergeSet(this, otherSortedSet);
         return oldSize == size();
     }
     
@@ -208,6 +215,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * <br>pre: none
      * @param other the object to compare to this set 
      * @return true if other is a Set and has the same elements as this set
+     * O(N)
      */
     public boolean equals(Object other) {
         if (!(other instanceof ISet)) { //check if other is ISet before casting
@@ -236,9 +244,67 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * <br> pre: otherSet != null
      * @param otherSet != null
      * @return a set that is the intersection of this set and otherSet
-     */
+     * O(N) if other set is a SortedSet
+     */ 
     public ISet<E> intersection(ISet<E> otherSet) {
-        // TODO
+        SortedSet<E> result = new SortedSet<E>();
+        SortedSet<E> otherSortedSet;
+        if (!(otherSet instanceof SortedSet<?>)) {
+            otherSortedSet = new SortedSet<>(otherSet); // should be O(NlogN)
+        } else {
+            otherSortedSet = (SortedSet<E>) otherSet;
+        }
+        ArrayList<E> temp = new ArrayList<>();
+        Iterator<E> thisIt = this.iterator();
+        Iterator<E> otherIt = otherSortedSet.iterator();
+        if (thisIt.hasNext() && otherIt.hasNext()) {
+            E thisCurr = thisIt.next();
+            E otherCurr = otherIt.next();
+            while (thisIt.hasNext() && otherIt.hasNext()) {
+                while (thisCurr.equals(otherCurr)) {
+                    // while both are same, incr both iterators
+                    thisCurr = thisIt.next();
+                    otherCurr = otherIt.next();
+                    temp.add(thisCurr);
+                }
+                if (thisCurr.compareTo(otherCurr) > 0) {
+                    //if this set's currVal is greater than other set, incr other set's iterator to see if there is a match in other set's next val
+                    otherCurr = otherIt.next();
+                } else {
+                    //if this set's curr val is less than other set, incr this set's iterator to see if next one in this set matches
+                    thisCurr = thisIt.next();
+                }
+            }
+        }
+        if (thisIt.hasNext()) { // add remaining
+            while (thisIt.hasNext()) {
+                temp.add(thisIt.next());
+            }
+        }
+        result.myCon = temp;
+        return result;
+    }
+
+    /**
+     * Create a new set that is the union of this set and otherSet.
+     * <br>pre: otherSet != null
+     * <br>post: returns a set that is the union of this set and otherSet.
+     * Neither this set or otherSet are altered as a result of this operation.
+     * <br> pre: otherSet != null
+     * @param otherSet != null
+     * @return a set that is the union of this set and otherSet
+     * O(N) if other set is a SortedSet, O(NlogN) otherwise
+     */
+    public ISet<E> union(ISet<E> otherSet) {
+        SortedSet<E> result = new SortedSet<E>();
+        SortedSet<E> otherSortedSet;
+        if (!(otherSet instanceof SortedSet<?>)) {
+            otherSortedSet = new SortedSet<>(otherSet); // should be O(NlogN)
+        } else {
+            otherSortedSet = (SortedSet<E>) otherSet;
+        }
+        mergeSet(result, otherSortedSet);
+        return result;
     }
 
     /**
@@ -355,10 +421,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             myCon.set(rightEnd, temp.get(rightEnd));
         }
     }
+
     // merge algorithm that takes a set as a parameter and merges it with the current
     // sorted set by iterating through sets and comparing each element
     // credits: code for Merge Sort from class slides
-    private void mergeSet(ISet<E> other) {
+    private void mergeSet(SortedSet<E> result, SortedSet<E> other) {
         ArrayList<E> temp = new ArrayList<>();
         Iterator<E> thisIt = this.iterator();
         Iterator<E> otherIt = other.iterator();
@@ -375,7 +442,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
                 temp.add(remaining.next());
             }
         }
-        myCon = temp;
+        result.myCon = temp;
     }
     
     // compare items from both sets one by one place in sorted order in temp array
