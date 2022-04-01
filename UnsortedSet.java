@@ -32,4 +32,27 @@ public class UnsortedSet<E> extends AbstractSet<E> {
 
     private ArrayList<E> myCon;
 
+    /**
+     * Constructor to build new unsorted set
+     */
+	public UnsortedSet() {
+	    myCon = new ArrayList<>();
+	}
+
+    /**
+     * Add an item to this set.
+     * <br> item != null
+     * @param item the item to be added to this set. item may not equal null.
+     * @return true if this set changed as a result of this operation, 
+     * false otherwise.
+     */
+    public boolean add(E item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Violation of precondition: item != null");
+        }
+        ArrayList prev = new ArrayList<E>(myCon);
+        myCon.add(item);
+        return myCon.equals(prev);
+    }
+
 }
