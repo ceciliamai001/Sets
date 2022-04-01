@@ -74,6 +74,7 @@ public class UnsortedSet<E> extends AbstractSet<E> {
 
     // CONTAINS IS O(N) IN ABSTRACT SET, ALL GOOD
     // CONTAINSALL IS ALSO GOOD
+    // NOTE: DO WE STILL NEED TO PUT METHODS AND JUST CALL SUPER??? ME CONFUSED
 
     /**
      * Create a new set that is the difference of this set and otherSet. 
