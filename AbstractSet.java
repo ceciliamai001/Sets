@@ -1,0 +1,178 @@
+/*  Student information for assignment:
+ *
+ *  On OUR honor, Mia Tey and Cecilia Mai, 
+ *  this programming assignment is OUR own work
+ *  and WE have not provided this code to any other student.
+ *
+ *  Number of slip days used: 0
+ *
+ *  Student 1
+ *  UTEID: MAT5693
+ *  email address: mia_tey@aol.com
+ *  TA name: Pranav
+ *  
+ *  Student 2 
+ *  UTEID:
+ *  email address:   
+ */
+
+import java.util.Iterator;
+
+public abstract class AbstractSet<E> implements ISet<E> {
+
+    /* DELETE THIS COMMENT FROM YOUR SUBMISSION.
+     * NO INSTANCE VARIABLES ALLOWED.
+     * 
+     * NO DIRECT REFERENCE TO UnsortedSet OR SortedSet ALLOWED.
+     * (In other words the data types UnsortedSet and SortedSet
+     * will not appear any where in this class.)
+     * 
+     * NO DIRECT REFERENCES to ArrayList or other Java Collections.
+     * 
+     * NO METHODS ADDED other than those in ISet and Object.
+     */
+
+    /**
+     * Make this set empty.
+     * <br>pre: none
+     * <br>post: size() = 0
+     */
+    public void clear() {
+        Iterator<E> it = this.iterator();
+        while (it.hasNext()) {
+            this.remove(it.next());
+        }
+    }
+
+    /**
+     * Determine if item is in this set. 
+     * <br>pre: item != null
+     * @param item element whose presence is being tested. 
+     * Item may not equal null.
+     * @return true if this set contains the specified item, false otherwise.
+     */
+    public boolean contains(E item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Violation of precondition: item != null");
+        }
+        for (E val : this) {
+            if (val.equals(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if all of the elements of otherSet are in this set.
+     * <br> pre: otherSet != null
+     * @param otherSet != null
+     * @return true if this set contains all of the elements in otherSet, 
+     * false otherwise.
+     */
+    public boolean containsAll(ISet<E> otherSet) {
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        }
+        Iterator<E> it = otherSet.iterator();
+        while (it.hasNext()) {
+            E tgt = it.next();
+            if (!this.contains(tgt)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Determine if this set is equal to other.
+     * Two sets are equal if they have exactly the same elements.
+     * The order of the elements does not matter.
+     * <br>pre: none
+     * @param other the object to compare to this set 
+     * @return true if other is a Set and has the same elements as this set
+     */
+    public boolean equals(Object other) {
+        if (!(other instanceof ISet)) { //check if other is ISet before casting
+            return false;
+        }
+        ISet<?> otherSet = (ISet<?>) other;
+        if (otherSet.size() != this.size()) {
+            return false; //quicker return before iterating thru all items
+        }
+        Iterator<E> thisIt = this.iterator();
+        while (thisIt.hasNext()) {
+            E tgt = thisIt.next();
+            Iterator<?> otherIt = otherSet.iterator();
+            boolean found = false;
+            while (otherIt.hasNext() && !found) {
+                found = otherIt.next().equals(tgt); 
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Remove the specified item from this set if it is present.
+     * pre: item != null
+     * @param item the item to remove from the set. item may not equal null.
+     * @return true if this set changed as a result of this operation, 
+     * false otherwise
+     */
+    public boolean remove(E item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Violation of precondition: item != null");
+        }
+        Iterator<E> it = this.iterator();
+        while (it.hasNext()) {
+            E curr = it.next();
+            if (curr.equals(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return the number of elements of this set.
+     * pre: none
+     * @return the number of items in this set
+     */
+    public int size() {
+        int count = 0;
+        Iterator<E> it = this.iterator();
+        while (it.hasNext()) {
+            it.next();
+            count ++;
+        }
+        return count;
+    }
+     
+      
+    /**
+     * Return a String version of this set. 
+     * Format is (e1, e2, ... en)
+     * @return A String version of this set.
+     */
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String seperator = ", ";
+        result.append("(");
+
+        Iterator<E> it = this.iterator();
+        while (it.hasNext()) {
+            result.append(it.next());
+            result.append(seperator);
+        }
+        // get rid of extra separator
+        if (this.size() > 0) {
+            result.setLength(result.length() - seperator.length());
+        }
+
+        result.append(")");
+        return result.toString();
+    }
+}
