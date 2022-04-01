@@ -202,6 +202,46 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     }
 
     /**
+     * Determine if this set is equal to other.
+     * Two sets are equal if they have exactly the same elements.
+     * The order of the elements does not matter.
+     * <br>pre: none
+     * @param other the object to compare to this set 
+     * @return true if other is a Set and has the same elements as this set
+     */
+    public boolean equals(Object other) {
+        if (!(other instanceof ISet)) { //check if other is ISet before casting
+            return false;
+        }
+        ISet<?> otherSet = (ISet<?>) other;
+        if (otherSet.size() != this.size()) {
+            return false; //quicker return before iterating thru all items
+        }
+        Iterator<E> thisIt = this.iterator();
+        Iterator<?> otherIt = otherSet.iterator();
+        while (thisIt.hasNext()) {
+            if (!thisIt.next().equals(otherIt.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * create a new set that is the intersection of this set and otherSet.
+     * <br>pre: otherSet != null<br>
+     * <br>post: returns a set that is the intersection of this set 
+     * and otherSet.
+     * Neither this set or otherSet are altered as a result of this operation.
+     * <br> pre: otherSet != null
+     * @param otherSet != null
+     * @return a set that is the intersection of this set and otherSet
+     */
+    public ISet<E> intersection(ISet<E> otherSet) {
+        // TODO
+    }
+
+    /**
      * Return an Iterator object for the elements of this set.
      * pre: none
      * @return an Iterator object for the elements of this set
