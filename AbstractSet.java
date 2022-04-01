@@ -32,6 +32,27 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * NO METHODS ADDED other than those in ISet and Object.
      */
 
+
+    /**
+      * A union operation. Add all items of otherSet that 
+      * are not already present in this set to this set.
+      * @param otherSet != null
+      * @return true if this set changed as a result of this operation, 
+      * false otherwise.
+      */
+    public boolean addAll(ISet<E> otherSet) {
+        if (otherSet == null)
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        
+        boolean mod = false;
+        for (E val : otherSet) {
+            if (add(val)) { // add method in sorted & unsorted set handles duplicates
+                mod = true;
+            }
+        }
+        return mod;
+    }
+
     /**
      * Make this set empty.
      * <br>pre: none
@@ -74,10 +95,9 @@ public abstract class AbstractSet<E> implements ISet<E> {
         if (otherSet == null) {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
-        Iterator<E> it = otherSet.iterator();
-        while (it.hasNext()) {
-            E tgt = it.next();
-            if (!this.contains(tgt)) {
+        Iterator<E> otherIt = otherSet.iterator();
+        while (otherIt.hasNext()) {
+            if (!this.contains(otherIt.next())) {
                 return false;
             }
         }
@@ -102,11 +122,10 @@ public abstract class AbstractSet<E> implements ISet<E> {
         }
         Iterator<E> thisIt = this.iterator();
         while (thisIt.hasNext()) {
-            E tgt = thisIt.next();
             Iterator<?> otherIt = otherSet.iterator();
             boolean found = false;
             while (otherIt.hasNext() && !found) {
-                found = otherIt.next().equals(tgt); 
+                found = otherIt.next().equals(thisIt.next()); 
             }
             if (!found) {
                 return false;
@@ -128,8 +147,8 @@ public abstract class AbstractSet<E> implements ISet<E> {
         }
         Iterator<E> it = this.iterator();
         while (it.hasNext()) {
-            E curr = it.next();
-            if (curr.equals(item)) {
+            if (it.next().equals(item)) {
+                it.remove();
                 return true;
             }
         }
@@ -175,4 +194,23 @@ public abstract class AbstractSet<E> implements ISet<E> {
         result.append(")");
         return result.toString();
     }
+
+    /**
+     * Create a new set that is the union of this set and otherSet.
+     * <br>pre: otherSet != null
+     * <br>post: returns a set that is the union of this set and otherSet.
+     * Neither this set or otherSet are altered as a result of this operation.
+     * <br> pre: otherSet != null
+     * @param otherSet != null
+     * @return a set that is the union of this set and otherSet
+     */
+    public ISet<E> union(ISet<E> otherSet) {
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        }
+        ISet<E> result = difference(otherSet); //retrieve unique elements of calling set
+        result.addAll(otherSet); //add the elements of otherSet
+        return result;
+    }
+
 }
