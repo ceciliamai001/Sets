@@ -45,14 +45,46 @@ public class UnsortedSet<E> extends AbstractSet<E> {
      * @param item the item to be added to this set. item may not equal null.
      * @return true if this set changed as a result of this operation, 
      * false otherwise.
+     * O(N)
      */
     public boolean add(E item) {
         if (item == null) {
             throw new IllegalArgumentException("Violation of precondition: item != null");
         }
-        ArrayList prev = new ArrayList<E>(myCon);
-        myCon.add(item);
-        return myCon.equals(prev);
+        ArrayList<E> prev = new ArrayList<E>(myCon);
+        if (!myCon.contains(item)) {
+            myCon.add(item); 
+        }
+        return !myCon.equals(prev);
     }
+
+    /**
+     * A union operation. Add all items of otherSet that 
+     * are not already present in this set to this set.
+     * @param otherSet != null
+     * @return true if this set changed as a result of this operation, 
+     * false otherwise.
+     */
+    public boolean addAll(ISet<E> otherSet) {
+    if (otherSet == null) {
+        throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+    }
+    ArrayList<E> prev = new ArrayList<E>(myCon);
+    for (E val : otherSet) {
+        myCon.add(val);
+    }
+        return !myCon.equals(prev);
+    }
+
+    /**
+     * Make this set empty.
+     * <br>pre: none
+     * <br>post: size() = 0
+     */
+    public void clear() {
+        myCon = new ArrayList<>();
+    }
+
+
 
 }
