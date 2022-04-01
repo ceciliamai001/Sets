@@ -34,6 +34,7 @@ public class UnsortedSet<E> extends AbstractSet<E> {
 
     /**
      * Constructor to build new unsorted set
+     * O(1)
      */
 	public UnsortedSet() {
 	    myCon = new ArrayList<>();
@@ -51,15 +52,14 @@ public class UnsortedSet<E> extends AbstractSet<E> {
         if (item == null) {
             throw new IllegalArgumentException("Violation of precondition: item != null");
         }
-        boolean mod = false;
         if (!myCon.contains(item)) {
             myCon.add(item);
-            mod = true;
+            return true;
         }
-        return mod;
+        return false;
     }
 
-    // ADDALL IS O(N^2) IN ABSTRACT SET, NO NEED TO USE
+    // ADDALL IS O(N^2) IN ABSTRACT SET, NO NEED TO USE, can do super??
 
     /**
      * Make this set empty.
@@ -132,7 +132,6 @@ public class UnsortedSet<E> extends AbstractSet<E> {
     public Iterator<E> iterator() {
         return myCon.iterator();
     }
-
 
     // REMOVE OK
 
