@@ -61,17 +61,6 @@ public class UnsortedSet<E> extends AbstractSet<E> {
 
     // ADDALL IS O(N^2) IN ABSTRACT SET, NO NEED TO USE, can do super??
 
-    /**
-     * Make this set empty.
-     * <br>pre: none
-     * <br>post: size() = 0
-     * O(1)
-     * COMMENT: DO I NEED TO OVERRIDE SINCE ITS ALREADY O(N) IN ABSTRACTSET
-     */
-    public void clear() {
-        myCon = new ArrayList<>();
-    }
-
     // CONTAINS IS O(N) IN ABSTRACT SET, ALL GOOD
     // CONTAINSALL IS ALSO GOOD
     // NOTE: DO WE STILL NEED TO PUT METHODS AND JUST CALL SUPER??? ME CONFUSED
