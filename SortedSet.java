@@ -22,9 +22,7 @@ import java.util.ArrayList;
 
 // NOTE QUESTIONS:
 // DO WE NEED TO CALL SUPER ON METHODS WE DID NOT NEED TO IMPLEMENT
-// IS CLEAR NOT O(1)
 // BRO PLS CLEAN THIS THIS IS SOO UGLY
-//
 
 /**
  * In this implementation of the ISet interface the elements in the Set are 
@@ -110,18 +108,6 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         int oldSize = size();
         mergeSet(this, otherSortedSet);
         return oldSize == size();
-    }
-    
-    /**
-     * Make this set empty.
-     * <br>pre: none
-     * <br>post: size() = 0
-     * O(1)
-     * NOTE: WHAT DO THEY MEAN BY "You can do this with a single statement in 
-     * SortedSet, but the Big O of that statement is O(N)." ?? cant we garbage collect
-     */
-    public void clear() {
-        myCon = new ArrayList<>();
     }
     
     /**
