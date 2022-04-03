@@ -7,7 +7,7 @@
  *  Number of slip days used: 0
  *
  *  Student 1
- *  UTEID: MAT5693
+ *  UTEID: mat5693
  *  email address: mia_tey@aol.com
  *  TA name: Pranav
  *  
@@ -40,6 +40,7 @@ public class UnsortedSet<E> extends AbstractSet<E> {
 	    myCon = new ArrayList<>();
 	}
 
+
     /**
      * Add an item to this set.
      * <br> item != null
@@ -58,10 +59,7 @@ public class UnsortedSet<E> extends AbstractSet<E> {
         }
         return false;
     }
-    // ADDALL IS O(N^2) IN ABSTRACT SET, NO NEED TO USE
-    // CLEAR IS GOOD
-    // CONTAINS IS O(N) IN ABSTRACT SET, ALL GOOD
-    // CONTAINSALL IS ALSO GOOD
+
 
     /**
      * Create a new set that is the difference of this set and otherSet. 
@@ -91,7 +89,6 @@ public class UnsortedSet<E> extends AbstractSet<E> {
         return result;
     }
 
-    // NO NEED TO OVERRIDE EQUALS UNTIL SORTEDSET
 
     /**
      * create a new set that is the intersection of this set and otherSet.
@@ -117,6 +114,7 @@ public class UnsortedSet<E> extends AbstractSet<E> {
         return result;
     }
 
+
     /**
      * Return an Iterator object for the elements of this set.
      * pre: none
@@ -127,7 +125,6 @@ public class UnsortedSet<E> extends AbstractSet<E> {
         return myCon.iterator();
     }
 
-    // REMOVE OK
 
     /**
      * Return the number of elements of this set.
@@ -138,5 +135,4 @@ public class UnsortedSet<E> extends AbstractSet<E> {
     public int size() {
         return myCon.size();
     }
-    // UNION IMPLEMENTED
 }
