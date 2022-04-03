@@ -1,16 +1,19 @@
-
-/*
- * Student information for assignment:
+/*  Student information for assignment:
  *
- * Number of slip days used:
- * Student 1 (Student whose turnin account is being used)
- *  UTEID:
- *  email address:
- *  Grader name:
+ *  On OUR honor, Mia Tey and Cecilia Mai, 
+ *  this programming assignment is OUR own work
+ *  and WE have not provided this code to any other student.
  *
- * Student 2
+ *  Number of slip days used: 0
+ *
+ *  Student 1
+ *  UTEID: MAT5693
+ *  email address: mia_tey@aol.com
+ *  TA name: Pranav
+ *  
+ *  Student 2 
  *  UTEID:
- *  email address:
+ *  email address:   
  */
 
 import java.io.File;
@@ -24,11 +27,20 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.JFileChooser;
+import javax.swing.UIManager;
 
 /*
  * CS 314 Students, put your results to the experiments and answers to questions
  * here: CS314 Students, why is it unwise to implement all three of the
  * intersection, union, and difference methods in the AbstractSet class:
+ * 
+ * The ISet used in the abstract class for intersection/union/difference comes 
+ * from an implicit call to another method. If a subclass of AbstractSet were to
+ * call intersection/union/difference and none of these methods had been overriden
+ * in the subclass, they would continue to call each other inside the abstract 
+ * class since there is no actual storage container inside the AbstractSet class 
+ * from which we can retrieve an ISet to manipulate and return. 
+ * 
  */
 
 public class SetTester {
@@ -237,20 +249,20 @@ public class SetTester {
 
         // CS314 Students. Uncomment this section when ready to
         // run your experiments
-        // try {
-        // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        // }
-        // catch(Exception e) {
-        // System.out.println("Unable to change look and feel");
-        // }
-        // Scanner sc = new Scanner(System.in);
-        // String response = "";
-        // do {
-        // largeTest();
-        // System.out.print("Another file? Enter y to do another file: ");
-        // response = sc.next();
-        // } while( response != null && response.length() > 0
-        // && response.substring(0,1).equalsIgnoreCase("y") );
+        try {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch(Exception e) {
+        System.out.println("Unable to change look and feel");
+        }
+        Scanner sc = new Scanner(System.in);
+        String response = "";
+        do {
+        largeTest();
+        System.out.print("Another file? Enter y to do another file: ");
+        response = sc.next();
+        } while( response != null && response.length() > 0
+        && response.substring(0,1).equalsIgnoreCase("y") );
 
     }
 
