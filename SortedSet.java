@@ -35,6 +35,8 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
 
     private ArrayList<E> myCon;
 
+    //TO DO: HANDLE DUPLICATES WHEN FORMING NEW SET OUT OF OTHER SET
+
     /**
      * create an empty SortedSet
      * O(1)
@@ -57,8 +59,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         for (E val : other) {
             myCon.add(val); //add items to arrayList to sort
         }
-        ArrayList<E> temp = new ArrayList<>(); // temp container
-	    sort(myCon, temp, 0, other.size() - 1);
+	    sort(myCon, new ArrayList<>(), 0, other.size() - 1);
     }
 
     /**
@@ -77,7 +78,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             if (size() == 0 || item.compareTo(myCon.get(size() - 1)) > 0) {
                 myCon.add(item);
             } else if (item.compareTo(myCon.get(0)) < 0) {
-                myCon.add(0, item);
+                myCon.add(0, item); //add at beginning is O(1)
             } else{
                 myCon.add(addIndex(item), item); //binary search to find position of insertion
             }
@@ -99,14 +100,8 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         if (otherSet == null) {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
-        SortedSet<E> otherSortedSet;
-        if (!(otherSet instanceof SortedSet<?>)) {
-            otherSortedSet = new SortedSet<>(otherSet); // should be O(NlogN)
-        } else {
-            otherSortedSet = (SortedSet<E>) otherSet;
-        }
         int oldSize = size();
-        mergeSet(this, otherSortedSet); // O(N) operation
+        mergeSet(this, getOtherSorted(otherSet)); // O(N) operation
         return oldSize == size();
     }
     
@@ -146,13 +141,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * @param otherSet != null
      * @return true if this set contains all of the elements in otherSet, 
      * false otherwise.
+     * O(N) if other set is also a SortedSet, O(NlogN) otherwise
      */
     public boolean containsAll(ISet<E> otherSet) {
         if (otherSet == null) {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
-        }
-        if (this.size() < otherSet.size()) { // early return if otherSet has more elements
-            return false;
         }
         return contAllHelp(0, 0, getOtherSorted(otherSet));
     }
@@ -161,6 +154,10 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     // this set contains all of the elements in otherSet
     private boolean contAllHelp(int indexThis, int indexOther, SortedSet<E> otherSortedSet) {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
+            //if this set is smaller it lacks elements of other set
+            if (this.size() < otherSortedSet.size()) { 
+                return false;
+            }
             E currThis = myCon.get(indexThis);
             E currOther = otherSortedSet.myCon.get(indexOther);
             if (currThis.equals(currOther)) {
@@ -169,7 +166,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             } else if (currThis.compareTo(currOther) < 0) {
                 indexThis++;
             }
-            else {
+            else { //currThis "surpassed" currOther so currOther not here
                 return false;
             }
         }
@@ -220,8 +217,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
                 indexThis++;
             }
         }
-        // add remaining elements from this set, if any
-        while (indexThis < this.size()) { 
+        while (indexThis < this.size()) { // add remaining from this set, if any
             temp.add(myCon.get(indexThis));
             indexThis++;
         }
@@ -239,10 +235,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * O(N)
      */
     public boolean equals(Object other) {
-        if (!(other instanceof ISet)) { //check if other is ISet before casting
+        if (!(other instanceof ISet<?>)) { //check if other is ISet before casting
             return false;
         }
         ISet<?> otherSet = (ISet<?>) other;
+        SortedSet<E> = getOtherSorted(otherSet);
         if (otherSet.size() != this.size()) {
             return false; //quicker return before iterating thru all items
         }
@@ -399,47 +396,47 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
 
     // Code to sort as part of Merge Sort algorithm
     // credits: code for Merge Sort from class slides
-    private void sort(ArrayList<E> myCon, ArrayList<E> temp, int low, int high) {
+    private void sort(ArrayList<E> con, ArrayList<E> temp, int low, int high) {
         if (low < high) {
             int center = (low + high) / 2;
-            sort(myCon, temp, low, center);
-            sort(myCon, temp, center + 1, high);
-            merge(myCon, temp, low, center + 1, high);
+            sort(con, temp, low, center);
+            sort(con, temp, center + 1, high);
+            merge(con, temp, low, center + 1, high);
         }
     }
     
     // Code to merge as part of Merge Sort algorithm
     // credits: code for Merge Sort from class slides
-    private void merge(ArrayList<E> myCon, ArrayList<E> temp, int leftPos, int rightPos, int rightEnd) {
+    private void merge(ArrayList<E> con, ArrayList<E> temp, int leftPos, int rightPos, int rightEnd) {
         int leftEnd = rightPos - 1;
         int tempPos = leftPos;
         int numElements = rightEnd - leftPos + 1;
         // main loop
         while (leftPos <= leftEnd && rightPos <= rightEnd) {
-            if (myCon.get(leftPos).compareTo(myCon.get(rightPos)) <= 0) {
-                temp.set(tempPos, myCon.get(leftPos));
+            if (con.get(leftPos).compareTo(con.get(rightPos)) <= 0) {
+                temp.set(tempPos, con.get(leftPos));
                 leftPos++;
             } else {
-                temp.set(tempPos, myCon.get(rightPos));
+                temp.set(tempPos, con.get(rightPos));
                 rightPos++;
             }
             tempPos++;
         }
         // copy rest of left half
         while (leftPos <= leftEnd) {
-            temp.set(tempPos, myCon.get(leftPos));
+            temp.set(tempPos, con.get(leftPos));
             tempPos++;
             leftPos++;
         }
         // copy rest of right half
         while (rightPos <= rightEnd) {
-            temp.set(tempPos, myCon.get(rightPos));
+            temp.set(tempPos, con.get(rightPos));
             tempPos++;
             rightPos++;
         }
         // Copy temp back into data
         for (int i = 0; i < numElements; i++, rightEnd--) {
-            myCon.set(rightEnd, temp.get(rightEnd));
+            con.set(rightEnd, temp.get(rightEnd));
         }
     }
 
