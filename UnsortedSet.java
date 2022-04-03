@@ -12,8 +12,8 @@
  *  TA name: Pranav
  *  
  *  Student 2 
- *  UTEID:
- *  email address:   
+ *  UTEID: cm64429
+ *  email address: mai.cecilia@utexas.edu  
  */
 
 import java.util.Iterator;
@@ -58,12 +58,10 @@ public class UnsortedSet<E> extends AbstractSet<E> {
         }
         return false;
     }
-
-    // ADDALL IS O(N^2) IN ABSTRACT SET, NO NEED TO USE, can do super??
-
+    // ADDALL IS O(N^2) IN ABSTRACT SET, NO NEED TO USE
+    // CLEAR IS GOOD
     // CONTAINS IS O(N) IN ABSTRACT SET, ALL GOOD
     // CONTAINSALL IS ALSO GOOD
-    // NOTE: DO WE STILL NEED TO PUT METHODS AND JUST CALL SUPER??? ME CONFUSED
 
     /**
      * Create a new set that is the difference of this set and otherSet. 
@@ -81,6 +79,9 @@ public class UnsortedSet<E> extends AbstractSet<E> {
      * O(N^2)
      */
     public ISet<E> difference(ISet<E> otherSet) {
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        }
         ISet<E> result = new UnsortedSet<>();
         for (E val : myCon) {
             if (!otherSet.contains(val)) {
@@ -104,6 +105,9 @@ public class UnsortedSet<E> extends AbstractSet<E> {
      * O(N^2)
      */
     public ISet<E> intersection(ISet<E> otherSet) {
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        }
         ISet<E> result = new UnsortedSet<>();
         for (E val : myCon) {
             if (otherSet.contains(val)) {
@@ -134,7 +138,5 @@ public class UnsortedSet<E> extends AbstractSet<E> {
     public int size() {
         return myCon.size();
     }
-
     // UNION IMPLEMENTED
-
 }
