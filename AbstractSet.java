@@ -12,8 +12,8 @@
  *  TA name: Pranav
  *  
  *  Student 2 
- *  UTEID:
- *  email address:   
+ *  UTEID: cm64429
+ *  email address: mai.cecilia@utexas.edu  
  */
 
 import java.util.Iterator;
@@ -39,6 +39,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
       * @param otherSet != null
       * @return true if this set changed as a result of this operation, 
       * false otherwise.
+      * O(N^2)
       */
     public boolean addAll(ISet<E> otherSet) {
         if (otherSet == null)
@@ -46,7 +47,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
         
         boolean mod = false;
         for (E val : otherSet) {
-            if (add(val)) { // add method in sorted & unsorted set handles duplicates
+            if (add(val)) { //add method in sorted & unsorted set handles duplicates
                 mod = true;
             }
         }
@@ -57,11 +58,13 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * Make this set empty.
      * <br>pre: none
      * <br>post: size() = 0
+     * O(N)
      */
     public void clear() {
         Iterator<E> it = this.iterator();
         while (it.hasNext()) {
-            this.remove(it.next());
+            it.next();
+            it.remove();
         }
     }
 
@@ -71,6 +74,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * @param item element whose presence is being tested. 
      * Item may not equal null.
      * @return true if this set contains the specified item, false otherwise.
+     * O(N)
      */
     public boolean contains(E item) {
         if (item == null) {
@@ -90,10 +94,15 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * @param otherSet != null
      * @return true if this set contains all of the elements in otherSet, 
      * false otherwise.
+     * O(N^2)
      */
     public boolean containsAll(ISet<E> otherSet) {
         if (otherSet == null) {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        }
+        //if otherSet has more elements than this set, this set does not contain all elements
+        if (this.size() < otherSet.size()) { 
+            return false;
         }
         Iterator<E> otherIt = otherSet.iterator();
         while (otherIt.hasNext()) {
@@ -111,6 +120,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * <br>pre: none
      * @param other the object to compare to this set 
      * @return true if other is a Set and has the same elements as this set
+     * O(N^2)
      */
     public boolean equals(Object other) {
         if (!(other instanceof ISet)) { //check if other is ISet before casting
@@ -140,6 +150,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * @param item the item to remove from the set. item may not equal null.
      * @return true if this set changed as a result of this operation, 
      * false otherwise
+     * O(N)
      */
     public boolean remove(E item) {
         if (item == null) {
@@ -159,6 +170,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * Return the number of elements of this set.
      * pre: none
      * @return the number of items in this set
+     * O(N)
      */
     public int size() {
         int count = 0;
@@ -203,12 +215,13 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * <br> pre: otherSet != null
      * @param otherSet != null
      * @return a set that is the union of this set and otherSet
+     * O(N^2)
      */
     public ISet<E> union(ISet<E> otherSet) {
         if (otherSet == null) {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
-        ISet<E> result = difference(otherSet); //retrieve unique elements of calling set
+        ISet<E> result = this.difference(otherSet); //retrieve unique elements of calling set
         result.addAll(otherSet); //add the elements of otherSet
         return result;
     }
