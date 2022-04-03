@@ -35,8 +35,6 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
 
     private ArrayList<E> myCon;
 
-    //TO DO: HANDLE DUPLICATES WHEN FORMING NEW SET OUT OF OTHER SET
-
     /**
      * create an empty SortedSet
      * O(1)
@@ -232,23 +230,26 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * <br>pre: none
      * @param other the object to compare to this set 
      * @return true if other is a Set and has the same elements as this set
-     * O(N)
+     * O(N) if sorted set, else O(N^2)
      */
     public boolean equals(Object other) {
-        if (!(other instanceof ISet<?>)) { //check if other is ISet before casting
+        if (!(other instanceof ISet<?>)) { //check if other is ISet
             return false;
         }
         ISet<?> otherSet = (ISet<?>) other;
-        SortedSet<E> = getOtherSorted(otherSet);
         if (otherSet.size() != this.size()) {
             return false; //quicker return before iterating thru all items
         }
-        Iterator<E> thisIt = this.iterator();
-        Iterator<?> otherIt = otherSet.iterator();
-        while (thisIt.hasNext()) { //both are same size if reached this point
-            if (!thisIt.next().equals(otherIt.next())) {
-                return false;
+        if (otherSet instanceof SortedSet<?>) {
+            Iterator<E> thisIt = this.iterator();
+            Iterator<?> otherIt = otherSet.iterator();
+            while (thisIt.hasNext()) {
+                if (!thisIt.next().equals(otherIt.next())) {
+                    return false;
+                }
             }
+        } else {
+            return super.equals(other); //not a sorted set? use parent's method O(N^2)
         }
         return true;
     }
@@ -407,12 +408,12 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     
     // Code to merge as part of Merge Sort algorithm
     // credits: code for Merge Sort from class slides
-    private void merge(ArrayList<E> con, ArrayList<E> temp, int leftPos, int rightPos, int rightEnd) {
+    private void merge(ArrayList<E> con, ArrayList<E> temp, int leftPos, int rightPos, 
+        int rightEnd) {
         int leftEnd = rightPos - 1;
         int tempPos = leftPos;
         int numElements = rightEnd - leftPos + 1;
-        // main loop
-        while (leftPos <= leftEnd && rightPos <= rightEnd) {
+        while (leftPos <= leftEnd && rightPos <= rightEnd) { //main loop
             if (con.get(leftPos).compareTo(con.get(rightPos)) <= 0) {
                 temp.set(tempPos, con.get(leftPos));
                 leftPos++;
@@ -422,26 +423,25 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             }
             tempPos++;
         }
-        // copy rest of left half
-        while (leftPos <= leftEnd) {
+        while (leftPos <= leftEnd) { //copy rest of left half
             temp.set(tempPos, con.get(leftPos));
             tempPos++;
             leftPos++;
         }
-        // copy rest of right half
-        while (rightPos <= rightEnd) {
+        while (rightPos <= rightEnd) { //copy rest of right half
             temp.set(tempPos, con.get(rightPos));
             tempPos++;
             rightPos++;
         }
-        // Copy temp back into data
-        for (int i = 0; i < numElements; i++, rightEnd--) {
+        for (int i = 0; i < numElements; i++, rightEnd--) { //Copy temp back into data
             con.set(rightEnd, temp.get(rightEnd));
         }
     }
 
-    // merge algorithm that takes a set as a parameter and merges it with the current
-    // sorted set by iterating through sets and comparing each element
+    // helper method for merge method
+
+    // merge algorithm for two sets. takes a set as a parameter and merges it with the
+    // current sorted set by iterating through both and comparing each element
     // credits: code for Merge Sort from class slides
     private void mergeSet(SortedSet<E> result, SortedSet<E> other) {
         ArrayList<E> temp = new ArrayList<>();
