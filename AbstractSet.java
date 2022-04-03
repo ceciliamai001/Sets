@@ -7,7 +7,7 @@
  *  Number of slip days used: 0
  *
  *  Student 1
- *  UTEID: MAT5693
+ *  UTEID: mat5693
  *  email address: mia_tey@aol.com
  *  TA name: Pranav
  *  
@@ -26,7 +26,6 @@ public abstract class AbstractSet<E> implements ISet<E> {
       * @param otherSet != null
       * @return true if this set changed as a result of this operation, 
       * false otherwise.
-      * O(N^2)
       */
     public boolean addAll(ISet<E> otherSet) {
         if (otherSet == null)
@@ -41,11 +40,11 @@ public abstract class AbstractSet<E> implements ISet<E> {
         return mod;
     }
 
+
     /**
      * Make this set empty.
      * <br>pre: none
      * <br>post: size() = 0
-     * O(N)
      */
     public void clear() {
         Iterator<E> it = this.iterator();
@@ -55,13 +54,13 @@ public abstract class AbstractSet<E> implements ISet<E> {
         }
     }
 
+
     /**
      * Determine if item is in this set. 
      * <br>pre: item != null
      * @param item element whose presence is being tested. 
      * Item may not equal null.
      * @return true if this set contains the specified item, false otherwise.
-     * O(N)
      */
     public boolean contains(E item) {
         if (item == null) {
@@ -75,13 +74,13 @@ public abstract class AbstractSet<E> implements ISet<E> {
         return false;
     }
 
+
     /**
      * Determine if all of the elements of otherSet are in this set.
      * <br> pre: otherSet != null
      * @param otherSet != null
      * @return true if this set contains all of the elements in otherSet, 
      * false otherwise.
-     * O(N^2)
      */
     public boolean containsAll(ISet<E> otherSet) {
         if (otherSet == null) {
@@ -100,6 +99,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
         return true;
     }
 
+
     /**
      * Determine if this set is equal to other.
      * Two sets are equal if they have exactly the same elements.
@@ -107,10 +107,9 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * <br>pre: none
      * @param other the object to compare to this set 
      * @return true if other is a Set and has the same elements as this set
-     * O(N^2)
      */
     public boolean equals(Object other) {
-        if (!(other instanceof ISet<?>)) { //check if other is ISet before casting
+        if (!(other instanceof ISet)) { //check if other is ISet before casting
             return false;
         }
         ISet<?> otherSet = (ISet<?>) other;
@@ -132,13 +131,13 @@ public abstract class AbstractSet<E> implements ISet<E> {
         return true;
     }
 
+
     /**
      * Remove the specified item from this set if it is present.
      * pre: item != null
      * @param item the item to remove from the set. item may not equal null.
      * @return true if this set changed as a result of this operation, 
      * false otherwise
-     * O(N)
      */
     public boolean remove(E item) {
         if (item == null) {
@@ -154,11 +153,11 @@ public abstract class AbstractSet<E> implements ISet<E> {
         return false;
     }
 
+
     /**
      * Return the number of elements of this set.
      * pre: none
      * @return the number of items in this set
-     * O(N)
      */
     public int size() {
         int count = 0;
@@ -195,6 +194,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
         return result.toString();
     }
 
+
     /**
      * Create a new set that is the union of this set and otherSet.
      * <br>pre: otherSet != null
@@ -203,7 +203,6 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * <br> pre: otherSet != null
      * @param otherSet != null
      * @return a set that is the union of this set and otherSet
-     * O(N^2)
      */
     public ISet<E> union(ISet<E> otherSet) {
         if (otherSet == null) {
@@ -213,5 +212,4 @@ public abstract class AbstractSet<E> implements ISet<E> {
         result.addAll(otherSet); //add the elements of otherSet
         return result;
     }
-
 }
