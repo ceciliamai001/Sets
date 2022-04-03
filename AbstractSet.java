@@ -134,8 +134,9 @@ public abstract class AbstractSet<E> implements ISet<E> {
         while (thisIt.hasNext()) {
             Iterator<?> otherIt = otherSet.iterator();
             boolean found = false;
+            E thisVal = thisIt.next();
             while (otherIt.hasNext() && !found) {
-                found = otherIt.next().equals(thisIt.next()); 
+                found = otherIt.next().equals(thisVal); 
             }
             if (!found) {
                 return false;
