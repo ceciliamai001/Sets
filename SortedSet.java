@@ -194,15 +194,17 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
         SortedSet<E> result = new SortedSet<E>();
-        SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
-        ArrayList<E> temp = new ArrayList<>();
-        int indexThis = 0;
-        int indexOther = 0;
+        result.myCon = getDifference(0, 0, getOtherSorted(otherSet), new ArrayList<>());
+        return result;
+    }
+
+    // get difference code
+    private ArrayList<E> getDifference(int indexThis, int indexOther, 
+        SortedSet<E> otherSortedSet, ArrayList<E> temp) {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
             E currThis = myCon.get(indexThis);
             E currOther = otherSortedSet.myCon.get(indexOther);
             if (currThis.equals(currOther)) {
-                temp.add(currThis);
                 indexThis++;
                 indexOther++;
             } else if (currThis.compareTo(currOther) > 0) {
@@ -213,12 +215,12 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
                 indexThis++;
             }
         }
-        result.myCon = addRemaining(temp, indexThis);
-        return result;
+        while (indexThis < this.size()) {
+            temp.add(myCon.get(indexThis));
+            indexThis++;
+        }
+        return temp;
     }
-
-    // get difference code
-    private void getDifference(int indexThis, int indexOther, SortedSet<E> otherSortedSet)
     
     
     /**
@@ -316,14 +318,6 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             otherSortedSet = (SortedSet<E>) otherSet;
         }
         return otherSortedSet;
-    }
-
-    // add remaining elements from this set to new resulting set
-    private ArrayList<E> addRemaining(ArrayList<E> temp, int index) {
-        while (index < this.size()) {
-            temp.add(myCon.get(index));
-        }
-        return temp;
     }
     
     /**
