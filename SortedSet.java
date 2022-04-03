@@ -12,17 +12,12 @@
  *  TA name: Pranav
  *  
  *  Student 2 
- *  UTEID:
- *  email address:   
+ *  UTEID: cm64429
+ *  email address: mai.cecilia@utexas.edu  
  */
 
 import java.util.Iterator;
 import java.util.ArrayList;
-
-
-// NOTE QUESTIONS:
-// DO WE NEED TO CALL SUPER ON METHODS WE DID NOT NEED TO IMPLEMENT
-// BRO PLS CLEAN THIS THIS IS SOO UGLY
 
 /**
  * In this implementation of the ISet interface the elements in the Set are 
@@ -58,10 +53,9 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         if (other == null) {
             throw new IllegalArgumentException("Violation of precondition: other != null");
         }
-        // add items to arrayList to sort
         myCon = new ArrayList<E>();
         for (E val : other) {
-            myCon.add(val);
+            myCon.add(val); //add items to arrayList to sort
         }
         ArrayList<E> temp = new ArrayList<>(); // temp container
 	    sort(myCon, temp, 0, other.size() - 1);
@@ -93,7 +87,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * @param otherSet != null
      * @return true if this set changed as a result of this operation, 
      * false otherwise.
-     * O(N) if other set is also a SortedSe, O(NlogN) otherwise
+     * O(N) if other set is also a SortedSet, O(NlogN) otherwise
      */
     public boolean addAll(ISet<E> otherSet) {
         if (otherSet == null) {
@@ -106,7 +100,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             otherSortedSet = (SortedSet<E>) otherSet;
         }
         int oldSize = size();
-        mergeSet(this, otherSortedSet);
+        mergeSet(this, otherSortedSet); // O(N) operation
         return oldSize == size();
     }
     
@@ -117,6 +111,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * Item may not equal null.
      * @return true if this set contains the specified item, false otherwise.
      * credits: code for binary search from class slides
+     * O(logN)
      */
     public boolean contains(E item) {
         if (item == null) {
@@ -138,8 +133,42 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return false;
     }
 
-    // calls AbstractSet's containsAllmethod calls this method's contains on each elem of otherSet
+    /**
+     * Determine if all of the elements of otherSet are in this set.
+     * <br> pre: otherSet != null
+     * @param otherSet != null
+     * @return true if this set contains all of the elements in otherSet, 
+     * false otherwise.
+     */
+    public boolean containsAll(ISet<E> otherSet) {
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        }
+        if (this.size() < otherSet.size()) { // early return if otherSet has more elements
+            return false;
+        }
+        SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
+        Iterator<E> thisIt = this.iterator();
+        Iterator<E> otherIt = otherSortedSet.iterator();
+        if (thisIt.hasNext() && otherIt.hasNext()) {
+            E thisCurr = thisIt.next();
+            E otherCurr = otherIt.next();
+            while (thisIt.hasNext() && otherIt.hasNext()) {
+                if (thisCurr.equals(otherCurr)) {
+                    thisCurr = thisIt.next();
+                    otherCurr = otherIt.next();
+                } else if (thisCurr.compareTo(otherCurr) < 0) {
+                        thisCurr = thisIt.next();
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
+    
+    
     /**
      * Create a new set that is the difference of this set and otherSet. 
      * Return an ISet of elements that are in this Set but not in otherSet. 
@@ -156,13 +185,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * O(N) if otherSet is a SortedSet, O(NlogN) otherwise
      */
     public ISet<E> difference(ISet<E> otherSet) {
-        SortedSet<E> result = new SortedSet<E>();
-        SortedSet<E> otherSortedSet;
-        if (!(otherSet instanceof SortedSet<?>)) {
-            otherSortedSet = new SortedSet<>(otherSet); // should be O(NlogN)
-        } else {
-            otherSortedSet = (SortedSet<E>) otherSet;
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
+        SortedSet<E> result = new SortedSet<E>();
+        SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
         ArrayList<E> temp = new ArrayList<>();
         Iterator<E> thisIt = this.iterator();
         Iterator<E> otherIt = otherSortedSet.iterator();
@@ -170,30 +197,20 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             E thisCurr = thisIt.next();
             E otherCurr = otherIt.next();
             while (thisIt.hasNext() && otherIt.hasNext()) {
-                while (thisCurr.equals(otherCurr)) {
-                    // while both are same, incr both iterators
+                if (thisCurr.equals(otherCurr)) {
                     thisCurr = thisIt.next();
-                    otherCurr = otherIt.next();
-                }
-                if (thisCurr.compareTo(otherCurr) > 0) {
-                    //if this set's currVal is greater than other set, incr other set's iterator to see if there is a match in other set's next val
                     otherCurr = otherIt.next();
                 } else {
-                    //if this set's curr val is less than other set, add this val to result and incr this set's iterator to see if next one in this set matches
+                    incrementItDiff(thisCurr, otherCurr, thisIt, otherIt);
                     temp.add(thisCurr);
-                    thisCurr = thisIt.next();
                 }
             }
         }
-        if (thisIt.hasNext()) { // add remaining
-            while (thisIt.hasNext()) {
-                temp.add(thisIt.next());
-            }
-        }
-        result.myCon = temp;
+        result.myCon = addRemaining(temp, thisIt);
         return result;
     }
-
+    
+    
     /**
      * Determine if this set is equal to other.
      * Two sets are equal if they have exactly the same elements.
@@ -213,14 +230,14 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         }
         Iterator<E> thisIt = this.iterator();
         Iterator<?> otherIt = otherSet.iterator();
-        while (thisIt.hasNext()) {
+        while (thisIt.hasNext()) { //both are same size if reached this point
             if (!thisIt.next().equals(otherIt.next())) {
                 return false;
             }
         }
         return true;
     }
-
+    
     /**
      * create a new set that is the intersection of this set and otherSet.
      * <br>pre: otherSet != null<br>
@@ -230,16 +247,14 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * <br> pre: otherSet != null
      * @param otherSet != null
      * @return a set that is the intersection of this set and otherSet
-     * O(N) if other set is a SortedSet
+     * O(N) if other set is a SortedSet, O(NlogN) else
      */ 
     public ISet<E> intersection(ISet<E> otherSet) {
-        SortedSet<E> result = new SortedSet<E>();
-        SortedSet<E> otherSortedSet;
-        if (!(otherSet instanceof SortedSet<?>)) {
-            otherSortedSet = new SortedSet<>(otherSet); // should be O(NlogN)
-        } else {
-            otherSortedSet = (SortedSet<E>) otherSet;
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
+        SortedSet<E> result = new SortedSet<E>();
+        SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
         ArrayList<E> temp = new ArrayList<>();
         Iterator<E> thisIt = this.iterator();
         Iterator<E> otherIt = otherSortedSet.iterator();
@@ -247,30 +262,19 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             E thisCurr = thisIt.next();
             E otherCurr = otherIt.next();
             while (thisIt.hasNext() && otherIt.hasNext()) {
-                while (thisCurr.equals(otherCurr)) {
-                    // while both are same, incr both iterators
+                if (thisCurr.equals(otherCurr)) {
                     thisCurr = thisIt.next();
                     otherCurr = otherIt.next();
                     temp.add(thisCurr);
-                }
-                if (thisCurr.compareTo(otherCurr) > 0) {
-                    //if this set's currVal is greater than other set, incr other set's iterator to see if there is a match in other set's next val
-                    otherCurr = otherIt.next();
                 } else {
-                    //if this set's curr val is less than other set, incr this set's iterator to see if next one in this set matches
-                    thisCurr = thisIt.next();
+                    incrementItDiff(thisCurr, otherCurr, thisIt, otherIt);
                 }
-            }
-        }
-        if (thisIt.hasNext()) { // add remaining
-            while (thisIt.hasNext()) {
-                temp.add(thisIt.next());
             }
         }
         result.myCon = temp;
         return result;
     }
-
+    
     /**
      * Create a new set that is the union of this set and otherSet.
      * <br>pre: otherSet != null
@@ -282,17 +286,47 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
      * O(N) if other set is a SortedSet, O(NlogN) otherwise
      */
     public ISet<E> union(ISet<E> otherSet) {
+        if (otherSet == null) {
+            throw new IllegalArgumentException("Violation of precondition: otherSet != null");
+        }
         SortedSet<E> result = new SortedSet<E>();
+        SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
+        mergeSet(result, otherSortedSet); // O(N)
+        return result;
+    }
+
+    // checks if the set sent in as parameter is a sorted set. 
+    // if yes, cast it to SortedSet, else sort it. returns a sorted set.
+    private SortedSet<E> getOtherSorted(ISet<E> otherSet) {
         SortedSet<E> otherSortedSet;
         if (!(otherSet instanceof SortedSet<?>)) {
             otherSortedSet = new SortedSet<>(otherSet); // should be O(NlogN)
         } else {
             otherSortedSet = (SortedSet<E>) otherSet;
         }
-        mergeSet(result, otherSortedSet);
-        return result;
+        return otherSortedSet;
     }
 
+    // add remaining elements from this set to new resulting set
+    private ArrayList<E> addRemaining(ArrayList<E> temp, Iterator<E> thisIt) {
+        if (thisIt.hasNext()) { 
+            while (thisIt.hasNext()) {
+                temp.add(thisIt.next());
+            }
+        }
+        return temp;
+    }
+
+    // if the current vals that each set's iterator are same, move both iterators
+    private void incrementItDiff(E thisCurr, E otherCurr, Iterator<E> thisIt,
+        Iterator <E> otherIt) {
+        if (thisCurr.compareTo(otherCurr) > 0) {
+            otherCurr = otherIt.next();
+        } else {
+            thisCurr = thisIt.next();
+        }
+    }
+    
     /**
      * Return an Iterator object for the elements of this set.
      * pre: none
@@ -302,10 +336,8 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     public Iterator<E> iterator() {
         return myCon.iterator();
     }
-
-    // REMOVE IS STILL O(N) SO DO I CALL SUPER OR LEAVE IT LOL
-
-     /**
+    
+    /**
      * Return the number of elements of this set.
      * pre: none
      * @return the number of items in this set
@@ -314,7 +346,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     public int size() {
         return myCon.size();
     }
-
+    
     /**
      * Return the smallest element in this SortedSet.
      * <br> pre: size() != 0
@@ -419,9 +451,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             E thisCurr = thisIt.next();
             E otherCurr = otherIt.next();
             while (thisIt.hasNext() && otherIt.hasNext()) {
+                //increment iterator and compare each val so that temp array is in order
                 compareVals(thisCurr, otherCurr, thisIt, otherIt, temp);
             }
         }
+        // add remaining items if list sizes not equal
         if (thisIt.hasNext() || otherIt.hasNext()) {
             Iterator<E> remaining = thisIt.hasNext() ? thisIt : otherIt;
             while (remaining.hasNext()) {
@@ -431,24 +465,19 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         result.myCon = temp;
     }
     
-    // compare items from both sets one by one place in sorted order in temp array
+    // compare items from both sets one by one and place in sorted order in temp array
     private void compareVals(E thisCurr, E otherCurr, Iterator<E> thisIt, 
         Iterator<E> otherIt, ArrayList<E> temp) {
         E lesser = thisCurr.compareTo(otherCurr) < 0 ? thisCurr : otherCurr;
         temp.add(lesser);
         //to avoid duplicates move both sets' iterators if they equal the current "least" val
-        if (thisCurr.equals(lesser) && otherCurr.equals(lesser)) {
+        if (thisCurr.equals(lesser) || otherCurr.equals(lesser)) {
             while (thisCurr.equals(lesser)) {
                thisCurr = thisIt.next(); 
             }
             while (thisCurr.equals(lesser)) {
                 otherCurr = otherIt.next();
             }
-        //if not dupes, only move the iterator from which the val that was placed came from
-        } else if (thisCurr.equals(lesser)) {
-            thisCurr = thisIt.next();
-        } else {
-            otherCurr = otherIt.next();
         }
     }
 }
