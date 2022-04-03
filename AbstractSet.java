@@ -20,19 +20,6 @@ import java.util.Iterator;
 
 public abstract class AbstractSet<E> implements ISet<E> {
 
-    /* DELETE THIS COMMENT FROM YOUR SUBMISSION.
-     * NO INSTANCE VARIABLES ALLOWED.
-     * 
-     * NO DIRECT REFERENCE TO UnsortedSet OR SortedSet ALLOWED.
-     * (In other words the data types UnsortedSet and SortedSet
-     * will not appear any where in this class.)
-     * 
-     * NO DIRECT REFERENCES to ArrayList or other Java Collections.
-     * 
-     * NO METHODS ADDED other than those in ISet and Object.
-     */
-
-
     /**
       * A union operation. Add all items of otherSet that 
       * are not already present in this set to this set.
@@ -123,7 +110,7 @@ public abstract class AbstractSet<E> implements ISet<E> {
      * O(N^2)
      */
     public boolean equals(Object other) {
-        if (!(other instanceof ISet)) { //check if other is ISet before casting
+        if (!(other instanceof ISet<?>)) { //check if other is ISet before casting
             return false;
         }
         ISet<?> otherSet = (ISet<?>) other;
