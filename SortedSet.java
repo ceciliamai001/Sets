@@ -7,7 +7,7 @@
  *  Number of slip days used: 0
  *
  *  Student 1
- *  UTEID: MAT5693
+ *  UTEID: mat5693
  *  email address: mia_tey@aol.com
  *  TA name: Pranav
  *  
@@ -43,6 +43,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         myCon = new ArrayList<E>();
     }
 
+
     /**
      * create a SortedSet out of an unsorted set. <br>
      * @param other != null
@@ -57,8 +58,10 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         for (E val : other) {
             myCon.add(val); //add items to arrayList to sort
         }
+        //Merge Sort, located at end of program
 	    sort(myCon, new ArrayList<>(), 0, other.size() - 1);
     }
+
 
     /**
      * Add an item to this set.
@@ -85,6 +88,28 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return false;
     }
 
+
+    // Do a binary search to find correct placement of
+    // the new added element for add method; returns this index
+    // credits: code for binary search from class slides
+    private int addIndex(E tgt) {
+        int low = 0;
+        int high = size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int beforeIndex = tgt.compareTo(myCon.get(mid));
+            int afterIndex = tgt.compareTo(myCon.get(mid + 1));
+            if (beforeIndex > 0 && afterIndex < 0) {
+                return mid + 1;
+            } else if (beforeIndex > 0) {
+                low = mid + 1;
+            } else {
+                high = mid - 1; // beforeIndex is < 0
+            }
+        }
+        return 0;
+    }
+
     
     /**
      * A union operation. Add all items of otherSet that 
@@ -103,6 +128,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return oldSize == size();
     }
     
+
     /**
      * Determine if item is in this set. 
      * <br>pre: item != null
@@ -133,6 +159,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return false;
     }
 
+
     /**
      * Determine if all of the elements of otherSet are in this set.
      * <br> pre: otherSet != null
@@ -147,6 +174,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         }
         return contAllHelp(0, 0, getOtherSorted(otherSet));
     }
+
 
     // Iterates through both sorted sets and returns true if 
     // this set contains all of the elements in otherSet
@@ -171,6 +199,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return true;
     }
     
+
     /**
      * Create a new set that is the difference of this set and otherSet. 
      * Return an ISet of elements that are in this Set but not in otherSet. 
@@ -195,10 +224,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return result;
     }
 
+
     // Iterates through both sorted sets and returns an array of elements
     // in this set that are not in other set
     private ArrayList<E> getDifference(int indexThis, int indexOther, 
-        SortedSet<E> otherSortedSet, ArrayList<E> temp) {
+            SortedSet<E> otherSortedSet, ArrayList<E> temp) {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
             E currThis = myCon.get(indexThis);
             E currOther = otherSortedSet.myCon.get(indexOther);
@@ -254,6 +284,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return true;
     }
     
+
     /**
      * create a new set that is the intersection of this set and otherSet.
      * <br>pre: otherSet != null<br>
@@ -274,10 +305,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return result;
     }
     
+
     // Iterates through both sorted sets and returns an array of elements
     // in this set that are also in other set
     private ArrayList<E> getIntersection(int indexThis, int indexOther, 
-        SortedSet<E> otherSortedSet, ArrayList<E> temp) {
+            SortedSet<E> otherSortedSet, ArrayList<E> temp) {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
             E currThis = myCon.get(indexThis);
             E currOther = otherSortedSet.myCon.get(indexOther);
@@ -297,6 +329,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return temp;
     }
     
+
     /**
      * Create a new set that is the union of this set and otherSet.
      * <br>pre: otherSet != null
@@ -317,6 +350,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return result;
     }
 
+
     // checks if the set sent in as parameter is a sorted set. 
     // if yes, cast it to SortedSet, else sort it. returns a sorted set.
     private SortedSet<E> getOtherSorted(ISet<E> otherSet) {
@@ -329,6 +363,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return otherSortedSet;
     }
     
+
     /**
      * Return an Iterator object for the elements of this set.
      * pre: none
@@ -339,6 +374,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return myCon.iterator();
     }
     
+
     /**
      * Return the number of elements of this set.
      * pre: none
@@ -349,6 +385,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return myCon.size();
     }
     
+
     /**
      * Return the smallest element in this SortedSet.
      * <br> pre: size() != 0
@@ -362,10 +399,12 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return myCon.get(0);
     }
     
+
     /**
      * Return the largest element in this SortedSet.
      * <br> pre: size() != 0
      * @return the largest element in this SortedSet.
+     * O(1)
      */
     public E max() {
         if (size() == 0) {
@@ -373,29 +412,9 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         }
         return myCon.get(size() - 1);
     }
-    
-    // implement a binary search method to find where we can put 
-    // the new added element for add method; returns this index
-    // credits: code for binary search from class slides
-    private int addIndex(E tgt) {
-        int low = 0;
-        int high = size() - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int beforeIndex = tgt.compareTo(myCon.get(mid));
-            int afterIndex = tgt.compareTo(myCon.get(mid + 1));
-            if (beforeIndex > 0 && afterIndex < 0) {
-                return mid + 1;
-            } else if (beforeIndex > 0) {
-                low = mid + 1;
-            } else {
-                high = mid - 1; // beforeIndex is < 0
-            }
-        }
-        return 0;
-    }
 
-    // Code to sort as part of Merge Sort algorithm
+
+    // Code to sort as part of Merge Sort algorithm for constructor that takes ISet<E> parameter
     // credits: code for Merge Sort from class slides
     private void sort(ArrayList<E> con, ArrayList<E> temp, int low, int high) {
         if (low < high) {
@@ -406,10 +425,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         }
     }
     
+
     // Code to merge as part of Merge Sort algorithm
     // credits: code for Merge Sort from class slides
     private void merge(ArrayList<E> con, ArrayList<E> temp, int leftPos, int rightPos, 
-        int rightEnd) {
+            int rightEnd) {
         int leftEnd = rightPos - 1;
         int tempPos = leftPos;
         int numElements = rightEnd - leftPos + 1;
@@ -438,10 +458,8 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         }
     }
 
-    // helper method for merge method
 
-    // merge algorithm for two sets. takes a set as a parameter and merges it with the
-    // current sorted set by iterating through both and comparing each element
+    // merge algorithm for two sorted sets. 
     // credits: code for Merge Sort from class slides
     private void mergeSet(SortedSet<E> result, SortedSet<E> other) {
         ArrayList<E> temp = new ArrayList<>();
@@ -454,6 +472,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
                 temp.add(currThis);
                 indexThis++;
                 indexOther++;
+            //if not equal, add the lesser value and increase its index
             } else if (currThis.compareTo(currOther) < 0) {
                 temp.add(currThis);
                 indexThis++;
