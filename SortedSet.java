@@ -123,6 +123,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         if (item == null) {
             throw new IllegalArgumentException("Violation of precondition: item != null");
         }
+        //use binary search to look for item
         int low = 0;
         int high = size() - 1;
         while (low <= high) {
@@ -153,9 +154,12 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         if (this.size() < otherSet.size()) { // early return if otherSet has more elements
             return false;
         }
-        SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
-        int indexThis = 0;
-        int indexOther = 0;
+        return contAllHelp(0, 0, getOtherSorted(otherSet));
+    }
+
+    // Iterates through both sorted sets and returns true if 
+    // this set contains all of the elements in otherSet
+    private boolean contAllHelp(int indexThis, int indexOther, SortedSet<E> otherSortedSet) {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
             E currThis = myCon.get(indexThis);
             E currOther = otherSortedSet.myCon.get(indexOther);
@@ -171,8 +175,6 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         }
         return true;
     }
-
-    
     
     /**
      * Create a new set that is the difference of this set and otherSet. 
@@ -198,7 +200,8 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         return result;
     }
 
-    // get difference code
+    // Iterates through both sorted sets and returns an array of elements
+    // in this set that are not in other set
     private ArrayList<E> getDifference(int indexThis, int indexOther, 
         SortedSet<E> otherSortedSet, ArrayList<E> temp) {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
@@ -207,15 +210,18 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             if (currThis.equals(currOther)) {
                 indexThis++;
                 indexOther++;
+                //if currThis > currOther, move index of other to check for equivalence
             } else if (currThis.compareTo(currOther) > 0) {
                 indexOther++;
-            }
-            else {
+            } else { 
+                //if currThis < currOther, currOther "passed" currThis, meaning currThis
+                //will never find an equal so add to list of differences
                 temp.add(currThis);
                 indexThis++;
             }
         }
-        while (indexThis < this.size()) {
+        // add remaining elements from this set, if any
+        while (indexThis < this.size()) { 
             temp.add(myCon.get(indexThis));
             indexThis++;
         }
@@ -266,13 +272,19 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             throw new IllegalArgumentException("Violation of precondition: otherSet != null");
         }
         SortedSet<E> result = new SortedSet<E>();
-        SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
-        ArrayList<E> temp = new ArrayList<>();
-        int indexThis = 0;
-        int indexOther = 0;
+        result.myCon = getIntersection(0, 0, getOtherSorted(otherSet), new ArrayList<>());
+        return result;
+    }
+    
+    // Iterates through both sorted sets and returns an array of elements
+    // in this set that are also in other set
+    private ArrayList<E> getIntersection(int indexThis, int indexOther, 
+        SortedSet<E> otherSortedSet, ArrayList<E> temp) {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
             E currThis = myCon.get(indexThis);
             E currOther = otherSortedSet.myCon.get(indexOther);
+
+            //add equivalent vals or else move indices until found equivalent vals
             if (currThis.equals(currOther)) {
                 temp.add(currThis);
                 indexThis++;
@@ -284,8 +296,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
                 indexThis++;
             }
         }
-        result.myCon = temp;
-        return result;
+        return temp;
     }
     
     /**
