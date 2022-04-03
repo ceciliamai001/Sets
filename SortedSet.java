@@ -154,20 +154,19 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             return false;
         }
         SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
-        Iterator<E> thisIt = this.iterator();
-        Iterator<E> otherIt = otherSortedSet.iterator();
-        if (thisIt.hasNext() && otherIt.hasNext()) {
-            E thisCurr = thisIt.next();
-            E otherCurr = otherIt.next();
-            while (thisIt.hasNext() && otherIt.hasNext()) {
-                if (thisCurr.equals(otherCurr)) {
-                    thisCurr = thisIt.next();
-                    otherCurr = otherIt.next();
-                } else if (thisCurr.compareTo(otherCurr) < 0) {
-                        thisCurr = thisIt.next();
-                } else {
-                    return false;
-                }
+        int indexThis = 0;
+        int indexOther = 0;
+        while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
+            E currThis = myCon.get(indexThis);
+            E currOther = otherSortedSet.myCon.get(indexOther);
+            if (currThis.equals(currOther)) {
+                indexThis++;
+                indexOther++;
+            } else if (currThis.compareTo(currOther) < 0) {
+                indexThis++;
+            }
+            else {
+                return false;
             }
         }
         return true;
@@ -197,24 +196,29 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         SortedSet<E> result = new SortedSet<E>();
         SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
         ArrayList<E> temp = new ArrayList<>();
-        Iterator<E> thisIt = this.iterator();
-        Iterator<E> otherIt = otherSortedSet.iterator();
-        if (thisIt.hasNext() && otherIt.hasNext()) {
-            E thisCurr = thisIt.next();
-            E otherCurr = otherIt.next();
-            while (thisIt.hasNext() && otherIt.hasNext()) {
-                if (thisCurr.equals(otherCurr)) {
-                    thisCurr = thisIt.next();
-                    otherCurr = otherIt.next();
-                } else {
-                    incrementItDiff(thisCurr, otherCurr, thisIt, otherIt);
-                    temp.add(thisCurr);
-                }
+        int indexThis = 0;
+        int indexOther = 0;
+        while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
+            E currThis = myCon.get(indexThis);
+            E currOther = otherSortedSet.myCon.get(indexOther);
+            if (currThis.equals(currOther)) {
+                temp.add(currThis);
+                indexThis++;
+                indexOther++;
+            } else if (currThis.compareTo(currOther) > 0) {
+                indexOther++;
+            }
+            else {
+                temp.add(currThis);
+                indexThis++;
             }
         }
-        result.myCon = addRemaining(temp, thisIt);
+        result.myCon = addRemaining(temp, indexThis);
         return result;
     }
+
+    // get difference code
+    private void getDifference(int indexThis, int indexOther, SortedSet<E> otherSortedSet)
     
     
     /**
@@ -262,19 +266,20 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         SortedSet<E> result = new SortedSet<E>();
         SortedSet<E> otherSortedSet = getOtherSorted(otherSet);
         ArrayList<E> temp = new ArrayList<>();
-        Iterator<E> thisIt = this.iterator();
-        Iterator<E> otherIt = otherSortedSet.iterator();
-        if (thisIt.hasNext() && otherIt.hasNext()) {
-            E thisCurr = thisIt.next();
-            E otherCurr = otherIt.next();
-            while (thisIt.hasNext() && otherIt.hasNext()) {
-                if (thisCurr.equals(otherCurr)) {
-                    thisCurr = thisIt.next();
-                    otherCurr = otherIt.next();
-                    temp.add(thisCurr);
-                } else {
-                    incrementItDiff(thisCurr, otherCurr, thisIt, otherIt);
-                }
+        int indexThis = 0;
+        int indexOther = 0;
+        while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
+            E currThis = myCon.get(indexThis);
+            E currOther = otherSortedSet.myCon.get(indexOther);
+            if (currThis.equals(currOther)) {
+                temp.add(currThis);
+                indexThis++;
+                indexOther++;
+            } else if (currThis.compareTo(currOther) > 0) {
+                indexOther++;
+            }
+            else {
+                indexThis++;
             }
         }
         result.myCon = temp;
@@ -314,21 +319,11 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     }
 
     // add remaining elements from this set to new resulting set
-    private ArrayList<E> addRemaining(ArrayList<E> temp, Iterator<E> thisIt) {
-        while (thisIt.hasNext()) {
-            temp.add(thisIt.next());
+    private ArrayList<E> addRemaining(ArrayList<E> temp, int index) {
+        while (index < this.size()) {
+            temp.add(myCon.get(index));
         }
         return temp;
-    }
-
-    // if the current vals that each set's iterator are same, move both iterators
-    private void incrementItDiff(E thisCurr, E otherCurr, Iterator<E> thisIt,
-        Iterator <E> otherIt) {
-        if (thisCurr.compareTo(otherCurr) > 0) {
-            otherCurr = otherIt.next();
-        } else {
-            thisCurr = thisIt.next();
-        }
     }
     
     /**
@@ -448,37 +443,23 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     // credits: code for Merge Sort from class slides
     private void mergeSet(SortedSet<E> result, SortedSet<E> other) {
         ArrayList<E> temp = new ArrayList<>();
-        Iterator<E> thisIt = this.iterator();
-        Iterator<E> otherIt = other.iterator();
-        if (thisIt.hasNext() && otherIt.hasNext()) {
-            E thisCurr = thisIt.next();
-            E otherCurr = otherIt.next();
-            while (thisIt.hasNext() && otherIt.hasNext()) {
-                //increment iterator and compare each val so that temp array is in order
-                compareVals(thisCurr, otherCurr, thisIt, otherIt, temp);
+        int indexThis = 0;
+        int indexOther = 0;
+        while (indexThis < this.size() && indexOther < other.size()) {
+            E currThis = myCon.get(indexThis);
+            E currOther = other.myCon.get(indexOther);
+            if (currThis.equals(currOther)) {
+                temp.add(currThis);
+                indexThis++;
+                indexOther++;
+            } else if (currThis.compareTo(currOther) < 0) {
+                temp.add(currThis);
+                indexThis++;
+            } else {
+                temp.add(currOther);
+                indexOther ++;
             }
-        }
-        // add remaining items if list sizes not equal
-        if (thisIt.hasNext() || otherIt.hasNext()) {
-            Iterator<E> remaining = thisIt.hasNext() ? thisIt : otherIt;
-            addRemaining(temp, remaining);
         }
         result.myCon = temp;
-    }
-    
-    // compare items from both sets one by one and place in sorted order in temp array
-    private void compareVals(E thisCurr, E otherCurr, Iterator<E> thisIt, 
-        Iterator<E> otherIt, ArrayList<E> temp) {
-        E lesser = thisCurr.compareTo(otherCurr) < 0 ? thisCurr : otherCurr;
-        temp.add(lesser);
-        //to avoid duplicates move both sets' iterators if they equal the current "least" val
-        if (thisCurr.equals(lesser) || otherCurr.equals(lesser)) {
-            while (thisCurr.equals(lesser)) {
-               thisCurr = thisIt.next(); 
-            }
-            while (otherCurr.equals(lesser)) {
-                otherCurr = otherIt.next();
-            }
-        }
     }
 }
