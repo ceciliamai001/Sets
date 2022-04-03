@@ -74,7 +74,13 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             throw new IllegalArgumentException("Violation of precondition: item != null");
         }
         if (!myCon.contains(item)) {
-            myCon.add(addIndex(item), item); //binary search to find position of insertion
+            if (size() == 0 || item.compareTo(myCon.get(size() - 1)) > 0) {
+                myCon.add(item);
+            } else if (item.compareTo(myCon.get(0)) < 0) {
+                myCon.add(0, item);
+            } else{
+                myCon.add(addIndex(item), item); //binary search to find position of insertion
+            }
             return true;
         }
         return false;
@@ -309,10 +315,8 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
 
     // add remaining elements from this set to new resulting set
     private ArrayList<E> addRemaining(ArrayList<E> temp, Iterator<E> thisIt) {
-        if (thisIt.hasNext()) { 
-            while (thisIt.hasNext()) {
-                temp.add(thisIt.next());
-            }
+        while (thisIt.hasNext()) {
+            temp.add(thisIt.next());
         }
         return temp;
     }
@@ -376,7 +380,6 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     // the new added element for add method; returns this index
     // credits: code for binary search from class slides
     private int addIndex(E tgt) {
-        int result = -1;
         int low = 0;
         int high = size() - 1;
         while (low <= high) {
@@ -391,7 +394,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
                 high = mid - 1; // beforeIndex is < 0
             }
         }
-        return result;
+        return 0;
     }
 
     // Code to sort as part of Merge Sort algorithm
@@ -458,9 +461,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         // add remaining items if list sizes not equal
         if (thisIt.hasNext() || otherIt.hasNext()) {
             Iterator<E> remaining = thisIt.hasNext() ? thisIt : otherIt;
-            while (remaining.hasNext()) {
-                temp.add(remaining.next());
-            }
+            addRemaining(temp, remaining);
         }
         result.myCon = temp;
     }
@@ -475,7 +476,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             while (thisCurr.equals(lesser)) {
                thisCurr = thisIt.next(); 
             }
-            while (thisCurr.equals(lesser)) {
+            while (otherCurr.equals(lesser)) {
                 otherCurr = otherIt.next();
             }
         }
