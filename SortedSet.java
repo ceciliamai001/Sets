@@ -47,7 +47,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     /**
      * create a SortedSet out of an unsorted set. <br>
      * @param other != null
-     * credits: code for Merge Sort from class slides, located at bottom of class
+     * credits: code for Merge Sort from class slides, located at end of class before MergeSet
      * O(NlogN)
      */
     public SortedSet(ISet<E> other) {
@@ -59,7 +59,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
             myCon.add(val); //add items to arrayList to sort
         }
         //Merge Sort, located at end of program
-	    sort(myCon, new ArrayList<>(), 0, other.size() - 1);
+	    sort(new ArrayList<>(), 0, other.size() - 1);
     }
 
 
@@ -240,7 +240,7 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
                 indexOther++;
             } else { 
                 //if currThis < currOther, currOther "passed" currThis, meaning currThis
-                //will never find an equal so add to list of differences
+                //will never find an equal so add val to list of differences
                 temp.add(currThis);
                 indexThis++;
             }
@@ -313,7 +313,6 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
         while (indexThis < this.size() && indexOther < otherSortedSet.size()) {
             E currThis = myCon.get(indexThis);
             E currOther = otherSortedSet.myCon.get(indexOther);
-
             //add equivalent vals or else move indices until found equivalent vals
             if (currThis.equals(currOther)) {
                 temp.add(currThis);
@@ -414,52 +413,51 @@ public class SortedSet<E extends Comparable<? super E>> extends AbstractSet<E> {
     }
 
 
-    // Code to sort as part of Merge Sort algorithm for constructor that takes ISet<E> parameter
+    // Merge Sort algorithm for the constructor that takes ISet<E> as parameter
     // credits: code for Merge Sort from class slides
-    private void sort(ArrayList<E> con, ArrayList<E> temp, int low, int high) {
+    private void sort(ArrayList<E> temp, int low, int high) {
         if (low < high) {
             int center = (low + high) / 2;
-            sort(con, temp, low, center);
-            sort(con, temp, center + 1, high);
-            merge(con, temp, low, center + 1, high);
+            sort(temp, low, center);
+            sort(temp, center + 1, high);
+            merge(temp, low, center + 1, high); 
         }
     }
     
 
-    // Code to merge as part of Merge Sort algorithm
+    // Code to merge arrays as part of Merge Sort algorithm
     // credits: code for Merge Sort from class slides
-    private void merge(ArrayList<E> con, ArrayList<E> temp, int leftPos, int rightPos, 
-            int rightEnd) {
+    private void merge(ArrayList<E> temp, int leftPos, int rightPos, int rightEnd) {
         int leftEnd = rightPos - 1;
         int tempPos = leftPos;
         int numElements = rightEnd - leftPos + 1;
         while (leftPos <= leftEnd && rightPos <= rightEnd) { //main loop
-            if (con.get(leftPos).compareTo(con.get(rightPos)) <= 0) {
-                temp.set(tempPos, con.get(leftPos));
+            if (myCon.get(leftPos).compareTo(myCon.get(rightPos)) <= 0) {
+                temp.set(tempPos, myCon.get(leftPos));
                 leftPos++;
             } else {
-                temp.set(tempPos, con.get(rightPos));
+                temp.set(tempPos, myCon.get(rightPos));
                 rightPos++;
             }
             tempPos++;
         }
         while (leftPos <= leftEnd) { //copy rest of left half
-            temp.set(tempPos, con.get(leftPos));
+            temp.set(tempPos, myCon.get(leftPos));
             tempPos++;
             leftPos++;
         }
         while (rightPos <= rightEnd) { //copy rest of right half
-            temp.set(tempPos, con.get(rightPos));
+            temp.set(tempPos, myCon.get(rightPos));
             tempPos++;
             rightPos++;
         }
-        for (int i = 0; i < numElements; i++, rightEnd--) { //Copy temp back into data
-            con.set(rightEnd, temp.get(rightEnd));
+        for (int i = 0; i < numElements; i++, rightEnd--) { //Copy temp back into con
+            myCon.set(rightEnd, temp.get(rightEnd));
         }
     }
 
 
-    // merge algorithm for two sorted sets. 
+    // Merge algorithm for two sorted sets. Used in union and addAll methods.
     // credits: code for Merge Sort from class slides
     private void mergeSet(SortedSet<E> result, SortedSet<E> other) {
         ArrayList<E> temp = new ArrayList<>();
