@@ -31,15 +31,19 @@ import javax.swing.UIManager;
 
 /*
  * CS 314 Students, put your results to the experiments and answers to questions
- * here: CS314 Students, why is it unwise to implement all three of the
+ * here: 
+ * 
+ * CS314 Students, why is it unwise to implement all three of the
  * intersection, union, and difference methods in the AbstractSet class:
  * 
- * The ISet used in the abstract class for intersection/union/difference comes 
- * from an implicit call to another method. If a subclass of AbstractSet were to
- * call intersection/union/difference and none of these methods had been overriden
- * in the subclass, they would continue to call each other inside the abstract 
- * class since there is no actual storage container inside the AbstractSet class 
- * from which we can retrieve an ISet to manipulate and return. 
+ * The ISet returned in the AbstractSet class for the intersection/union/difference method comes
+ * from an implicit call to AbstractSet's subclass's method, thereby relying on the promise that 
+ * the subclass will implement one of these other methods and return an ISet using the storage 
+ * container in that subclass. However, this is not guaranteed. If one of these methods were called
+ * and they were all implemented within the AbstractSet class and none of these methods had been 
+ * overriden in the subclass, they would continue to call each other inside the abstract class since 
+ * there is no actual storage container inside the AbstractSet class from which we can retrieve an 
+ * ISet to manipulate and return. 
  * 
  */
 
